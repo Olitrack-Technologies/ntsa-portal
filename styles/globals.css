@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Leaflet CSS — required for map tiles and controls to render correctly */
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  --brand: #3b3bff;
+}
+
+/* Ensure leaflet popups sit above Mantine modals */
+.leaflet-pane,
+.leaflet-control {
+  z-index: 400;
+}
