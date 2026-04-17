@@ -13,7 +13,7 @@ const theme = createTheme({
       '#3b3bff', '#3333e0', '#2b2bc4', '#2323a8', '#1b1b8c',
     ],
   },
-  fontFamily: 'Inter, system-ui, sans-serif',
+  fontFamily: "'Eudoxus Sans', system-ui, sans-serif",
 });
 
 export default function App({ Component, pageProps }: AppProps) {

@@ -3,6 +3,34 @@
 /* Leaflet CSS — required for map tiles and controls to render correctly */
 @import "leaflet/dist/leaflet.css";
 
+@font-face {
+  font-family: 'Eudoxus Sans';
+  src: url('/fonts/EudoxusSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Eudoxus Sans';
+  src: url('/fonts/EudoxusSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Eudoxus Sans';
+  src: url('/fonts/EudoxusSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html, body {
+  font-family: 'Eudoxus Sans', system-ui, sans-serif;
+}
+
 :root {
   --brand: #3b3bff;
 }
