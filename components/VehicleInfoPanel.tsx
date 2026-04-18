@@ -1,11 +1,11 @@
 /**
  * VehicleInfoPanel — fixed right-side panel.
- * Displays user header, vehicle basic info, and driver information.
+ * Displays user header, vehicle basic info, and owner information.
  */
 import Image from "next/image";
 import { Avatar, TextInput } from "@mantine/core";
 import { IconSearch, IconLogout } from "@tabler/icons-react";
-import type { Vehicle, Driver } from "@/types/vehicle";
+import type { Vehicle, Owner } from "@/types/vehicle";
 
 // --- Sub-components ---------------------------------------------------------
 
@@ -52,14 +52,14 @@ function Section({ title, children }: SectionProps) {
 
 interface VehicleInfoPanelProps {
 	vehicle: Vehicle;
-	driver: Driver;
+	owner: Owner;
 	onSignOut: () => void;
 	width?: number;
 }
 
 export default function VehicleInfoPanel({
 	vehicle,
-	driver,
+	owner,
 	onSignOut,
 	width
 }: VehicleInfoPanelProps) {
@@ -111,15 +111,14 @@ export default function VehicleInfoPanel({
 					</div>
 				</Section>
 
-				{/* Driver Information */}
-				<Section title="Driver Information">
+				{/* Owner Information */}
+				<Section title="Owner Information">
 					<div className={`grid ${cols} gap-x-3 gap-y-4`}>
-						<InfoField label="First Name" value={driver.firstName} />
-						<InfoField label="Middle Name" value={driver.middleName} />
-						<InfoField label="Last Name" value={driver.lastName} />
-						<InfoField label="Home" value={driver.home} />
-						<InfoField label="Email" value={driver.email} />
-						<InfoField label="Phone Number" value={driver.phone} />
+						<InfoField label="First Name" value={owner.firstName} />
+						<InfoField label="Middle Name" value={owner.middleName} />
+						<InfoField label="Last Name" value={owner.lastName} />
+						<InfoField label="Email" value={owner.email} />
+						<InfoField label="Phone Number" value={owner.phone} />
 					</div>
 				</Section>
 			</div>

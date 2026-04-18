@@ -84,11 +84,9 @@ const columns = [
 
 interface TrackingTableProps {
   data: TrackingPoint[];
-  activeRowId?: string;
-  onRowSelect: (point: TrackingPoint) => void;
 }
 
-export default function TrackingTable({ data, activeRowId, onRowSelect }: TrackingTableProps) {
+export default function TrackingTable({ data }: TrackingTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const sorted = [...data].sort(
@@ -127,16 +125,10 @@ export default function TrackingTable({ data, activeRowId, onRowSelect }: Tracki
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map((row) => {
-            const isActive = row.original.id === activeRowId;
-            return (
+          {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                onClick={() => onRowSelect(row.original)}
-                className={[
-                  'cursor-pointer transition-colors border-b border-gray-100',
-                  isActive ? 'bg-indigo-50' : 'hover:bg-gray-50',
-                ].join(' ')}
+                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-3 py-1.5 text-[11px] text-gray-700 whitespace-nowrap">
@@ -144,8 +136,7 @@ export default function TrackingTable({ data, activeRowId, onRowSelect }: Tracki
                   </td>
                 ))}
               </tr>
-            );
-          })}
+          ))}
         </tbody>
       </table>
     </div>

@@ -84,7 +84,7 @@ export const mockTrackedVehicle: TrackedVehicle = {
 		fittingDate: "2023-06-15",
 		fittingAgent: "Olitrack Systems Ltd"
 	},
-	driver: {
+	owner: {
 		firstName: "James",
 		middleName: "Otieno",
 		lastName: "Mwangi",

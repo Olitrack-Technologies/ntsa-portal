@@ -8,10 +8,10 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useState, useCallback, useRef } from "react";
 
+
 import TrackingTable from "@/components/TrackingTable";
 import VehicleInfoPanel from "@/components/VehicleInfoPanel";
 import { mockTrackedVehicle } from "@/data/mock";
-import type { TrackingPoint } from "@/types/vehicle";
 import Image from "next/image";
 import { Avatar, Menu } from "@mantine/core";
 import { IconLogout, IconUser } from "@tabler/icons-react";
@@ -24,78 +24,60 @@ const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function DashboardPage() {
 	const router = useRouter();
-	const { vehicle, driver, history } = mockTrackedVehicle;
+	const { vehicle, owner, history } = mockTrackedVehicle;
 
-	// Active tracking row drives both the table highlight and map re-centre
-	const [activePoint, setActivePoint] = useState<TrackingPoint>(history[0]);
+	// Most recent history entry — drives the marker position and status
+	const latestPoint = history.reduce((a, b) =>
+		new Date(b.timestamp) > new Date(a.timestamp) ? b : a
+	);
 
 	const [tableHeight, setTableHeight] = useState(220);
-	const dragStartY = useRef<number | null>(null);
-	const dragStartHeight = useRef(220);
+	const tableHeightRef = useRef(220);
 
 	const [panelWidth, setPanelWidth] = useState(320);
+	const panelWidthRef = useRef(320);
+
+	const dragStartY = useRef<number | null>(null);
 	const dragStartX = useRef<number | null>(null);
-	const dragStartWidth = useRef(320);
 
-	const handleDragStart = useCallback(
-		(e: React.MouseEvent) => {
-			dragStartY.current = e.clientY;
-			dragStartHeight.current = tableHeight;
+	const handleDragStart = useCallback((e: React.MouseEvent) => {
+		dragStartY.current = e.clientY;
+		const startH = tableHeightRef.current;
 
-			const onMove = (ev: MouseEvent) => {
-				if (dragStartY.current === null) return;
-				const delta = dragStartY.current - ev.clientY;
-				setTableHeight(
-					Math.max(80, Math.min(600, dragStartHeight.current + delta))
-				);
-			};
-			const onUp = () => {
-				dragStartY.current = null;
-				window.removeEventListener("mousemove", onMove);
-				window.removeEventListener("mouseup", onUp);
-			};
-			window.addEventListener("mousemove", onMove);
-			window.addEventListener("mouseup", onUp);
-		},
-		[tableHeight]
-	);
-
-	const handlePanelDragStart = useCallback(
-		(e: React.MouseEvent) => {
-			dragStartX.current = e.clientX;
-			dragStartWidth.current = panelWidth;
-
-			const onMove = (ev: MouseEvent) => {
-				if (dragStartX.current === null) return;
-				const delta = dragStartX.current - ev.clientX;
-				setPanelWidth(
-					Math.max(200, Math.min(600, dragStartWidth.current + delta))
-				);
-			};
-			const onUp = () => {
-				dragStartX.current = null;
-				window.removeEventListener("mousemove", onMove);
-				window.removeEventListener("mouseup", onUp);
-			};
-			window.addEventListener("mousemove", onMove);
-			window.addEventListener("mouseup", onUp);
-		},
-		[panelWidth]
-	);
-
-// Row click → map flies to that coordinate
-	const handleRowSelect = useCallback((point: TrackingPoint) => {
-		setActivePoint(point);
+		const onMove = (ev: MouseEvent) => {
+			if (dragStartY.current === null) return;
+			const next = Math.max(80, Math.min(600, startH + (dragStartY.current - ev.clientY)));
+			tableHeightRef.current = next;
+			setTableHeight(next);
+		};
+		const onUp = () => {
+			dragStartY.current = null;
+			window.removeEventListener("mousemove", onMove);
+			window.removeEventListener("mouseup", onUp);
+		};
+		window.addEventListener("mousemove", onMove);
+		window.addEventListener("mouseup", onUp);
 	}, []);
 
-	// Marker click → highlight matching history row (fleet markers are no-ops)
-	const handleMarkerClick = useCallback(
-		(id: string) => {
-			const match = history.find((p) => p.id === id);
-			if (match) setActivePoint(match);
-		},
-		[history]
-	);
+	const handlePanelDragStart = useCallback((e: React.MouseEvent) => {
+		dragStartX.current = e.clientX;
+		const startW = panelWidthRef.current;
+
+		const onMove = (ev: MouseEvent) => {
+			if (dragStartX.current === null) return;
+			const next = Math.max(200, Math.min(600, startW + (dragStartX.current - ev.clientX)));
+			panelWidthRef.current = next;
+			setPanelWidth(next);
+		};
+		const onUp = () => {
+			dragStartX.current = null;
+			window.removeEventListener("mousemove", onMove);
+			window.removeEventListener("mouseup", onUp);
+		};
+		window.addEventListener("mousemove", onMove);
+		window.addEventListener("mouseup", onUp);
+	}, []);
+
 
 	return (
 		<>
@@ -156,18 +138,16 @@ export default function DashboardPage() {
 						<div className="flex-1 min-h-0">
 							<Map
 								markers={[{
-									id: activePoint.id,
-									latitude: activePoint.latitude,
-									longitude: activePoint.longitude,
-									status: activePoint.status,
-									label: `Point ${activePoint.id}`
+									id: latestPoint.id,
+									latitude: latestPoint.latitude,
+									longitude: latestPoint.longitude,
+									status: latestPoint.status,
+									label: vehicle.registration
 								}]}
 								centre={{
-									lat: activePoint.latitude,
-									lng: activePoint.longitude
+									lat: latestPoint.latitude,
+									lng: latestPoint.longitude
 								}}
-								activePointId={activePoint.id}
-								onMarkerClick={handleMarkerClick}
 							/>
 						</div>
 
@@ -183,8 +163,6 @@ export default function DashboardPage() {
 							style={{ height: tableHeight }}>
 							<TrackingTable
 								data={history}
-								activeRowId={activePoint.id}
-								onRowSelect={handleRowSelect}
 							/>
 						</div>
 					</div>
@@ -199,7 +177,7 @@ export default function DashboardPage() {
 					<div style={{ width: panelWidth }} className="shrink-0">
 						<VehicleInfoPanel
 							vehicle={vehicle}
-							driver={driver}
+							owner={owner}
 							onSignOut={() => router.push("/login")}
 							width={panelWidth}
 						/>

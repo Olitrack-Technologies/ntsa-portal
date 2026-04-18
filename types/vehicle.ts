@@ -36,7 +36,7 @@ export interface Vehicle {
 	fittingAgent: string;
 }
 
-export interface Driver {
+export interface Owner {
 	firstName: string;
 	middleName: string;
 	lastName: string;
@@ -47,6 +47,6 @@ export interface Driver {
 
 export interface TrackedVehicle {
 	vehicle: Vehicle;
-	driver: Driver;
+	owner: Owner;
 	history: TrackingPoint[];
 }
